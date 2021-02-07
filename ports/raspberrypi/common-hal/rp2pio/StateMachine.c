@@ -545,6 +545,7 @@ static bool _transfer(rp2pio_statemachine_obj_t *self,
         size_t rx_remaining = in_len;
         size_t tx_remaining = out_len;
 
+        RUN_BACKGROUND_TASKS; // clear any pending tasks before writing the small number of bytes
         while (rx_remaining || tx_remaining) {
             if (tx_remaining && !pio_sm_is_tx_fifo_full(self->pio, self->state_machine)) {
                 *tx_destination = *data_out;
