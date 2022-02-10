@@ -85,7 +85,7 @@ uint16_t decompress_length(const compressed_string_t *compressed);
 
 // Map MicroPython's error messages to our translations.
 #if defined(MICROPY_ENABLE_DYNRUNTIME) && MICROPY_ENABLE_DYNRUNTIME
-#define MP_ERROR_TEXT(x) (x)
+#define MP_ERROR_TEXT(x) translate(x)
 #else
 #define MP_ERROR_TEXT(x) translate(x)
 #endif

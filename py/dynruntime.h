@@ -140,9 +140,7 @@ static inline mp_obj_t mp_obj_cast_to_native_base_dyn(mp_obj_t self_in, mp_const
 
     if (MP_OBJ_FROM_PTR(self_type) == native_type) {
         return self_in;
-    }
-    mp_parent_t parent = mp_type_get_parent_slot(self_type);
-    if (parent != native_type) {
+    } else if (self_type->parent != native_type) {
         // The self_in object is not a direct descendant of native_type, so fail the cast.
         // This is a very simple version of mp_obj_is_subclass_fast that could be improved.
         return MP_OBJ_NULL;
@@ -221,7 +219,7 @@ static inline mp_obj_t mp_obj_len_dyn(mp_obj_t o) {
 
 #define nlr_raise(o)                            (mp_raise_dyn(o))
 #define mp_raise_type_arg(type, arg)            (mp_raise_dyn(mp_obj_new_exception_arg1_dyn((type), (arg))))
-#define mp_raise_msg(type, msg)                 (mp_fun_table.raise_msg_str((type), (msg)))
+#define mp_raise_msg(type, msg)                 (mp_fun_table.raise_msg((type), (msg)))
 #define mp_raise_OSError(er)                    (mp_raise_OSError_dyn(er))
 #define mp_raise_NotImplementedError(msg)       (mp_raise_msg(&mp_type_NotImplementedError, (msg)))
 #define mp_raise_TypeError(msg)                 (mp_raise_msg(&mp_type_TypeError, (msg)))
@@ -281,7 +279,7 @@ static inline void mp_obj_get_array_dyn(mp_obj_t o, size_t *len, mp_obj_t **item
         *len = l->len;
         *items = l->items;
     } else {
-        mp_raise_TypeError("expected tuple/list");
+        mp_raise_TypeError(MP_ERROR_TEXT("expected tuple/list"));
     }
 }
 
