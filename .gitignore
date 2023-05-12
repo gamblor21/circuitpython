@@ -18,6 +18,7 @@
 # Packages
 ############
 dist/
+cp_venv/
 *.egg-info
 .eggs
 
