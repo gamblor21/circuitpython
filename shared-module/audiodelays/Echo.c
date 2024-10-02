@@ -298,8 +298,8 @@ audioio_get_buffer_result_t audiodelays_echo_get_buffer(audiodelays_echo_obj_t *
             } else {
                 // Since we have no sample we can just iterate over the our entire remaining buffer and finish
                 for (uint32_t i = 0; i < length; i++) {
-                    int16_t echo = echo_buffer[self->echo_buffer_read_pos++] * decay;
-                    echo_buffer[self->echo_buffer_write_pos++] = echo;
+                    int16_t echo = echo_buffer[self->echo_buffer_read_pos++];
+                    echo_buffer[self->echo_buffer_write_pos++] = echo * decay;
 
                     if (MP_LIKELY(self->bits_per_sample == 16)) {
                         word_buffer[i] = echo * mix;
@@ -354,8 +354,8 @@ audioio_get_buffer_result_t audiodelays_echo_get_buffer(audiodelays_echo_obj_t *
                         }
                     }
 
-                    int32_t echo = echo_buffer[self->echo_buffer_read_pos++] * decay;
-                    int32_t word = echo + sample_word;
+                    int32_t echo = echo_buffer[self->echo_buffer_read_pos++];
+                    int32_t word = echo * decay + sample_word;
 
                     if (MP_LIKELY(self->bits_per_sample == 16)) {
                         word = mix_down_sample(word);
@@ -370,6 +370,7 @@ audioio_get_buffer_result_t audiodelays_echo_get_buffer(audiodelays_echo_obj_t *
                         echo_buffer[self->echo_buffer_write_pos++] = (int8_t)word;
                     }
 
+                    word = echo + sample_word;
                     if (MP_LIKELY(self->bits_per_sample == 16)) {
                         word_buffer[i] = (sample_word * (1.0 - mix)) + (word * mix);
                         if (!self->samples_signed) {
