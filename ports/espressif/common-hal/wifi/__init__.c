@@ -40,6 +40,8 @@ wifi_radio_obj_t common_hal_wifi_radio_obj;
 #include "nvs_flash.h"
 #endif
 
+#define MAC_ADDRESS_LENGTH 6
+
 static const char *TAG = "CP wifi";
 
 static void schedule_background_on_cp_core(void *arg) {
@@ -197,6 +199,13 @@ void common_hal_wifi_init(bool user_initiated) {
         ESP_LOGE(TAG, "WiFi error code: %x", result);
         return;
     }
+    // set the default lwip_local_hostname
+    char cpy_default_hostname[strlen(CIRCUITPY_BOARD_ID) + (MAC_ADDRESS_LENGTH * 2) + 6];
+    uint8_t mac[MAC_ADDRESS_LENGTH];
+    esp_wifi_get_mac(ESP_IF_WIFI_STA, mac);
+    sprintf(cpy_default_hostname, "cpy_%s_%x", CIRCUITPY_BOARD_ID, (unsigned int)mac);
+    const char *default_lwip_local_hostname = cpy_default_hostname;
+    ESP_ERROR_CHECK(esp_netif_set_hostname(self->netif, default_lwip_local_hostname));
     // set station mode to avoid the default SoftAP
     common_hal_wifi_radio_start_station(self);
     // start wifi
